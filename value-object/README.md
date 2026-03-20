@@ -18,14 +18,16 @@ tag:
 
 ## Also known as
 
-* Embedded Value
 * Immutable Object
+* Embedded Value
 * Inline Value
 * Integrated Value
 
-## Intent of Value Object Design Pattern
+## Intent of Value Object / Immutable Object Design Pattern
 
-The Value Object pattern in Java creates immutable objects that represent a descriptive aspect of the domain with no conceptual identity. It aims to enhance performance and reduce memory overhead by storing frequently accessed immutable data directly within the object that uses it, rather than separately.
+The Value Object pattern (also known as the **Immutable Object pattern**) in Java creates immutable objects that represent a descriptive aspect of the domain with no conceptual identity. It aims to enhance performance and reduce memory overhead by storing frequently accessed immutable data directly within the object that uses it, rather than separately.
+
+The Immutable Object pattern ensures that an object's state cannot be modified after construction, providing thread-safety and predictability in concurrent scenarios.
 
 ## Detailed Explanation of Value Object Pattern with Real-World Examples
 
@@ -146,3 +148,4 @@ Trade-offs:
 * [J2EE Design Patterns](https://amzn.to/4dpzgmx)
 * [Patterns of Enterprise Application Architecture](https://amzn.to/3WfKBPR)
 * [ValueObject (Martin Fowler)](https://martinfowler.com/bliki/ValueObject.html)
+
