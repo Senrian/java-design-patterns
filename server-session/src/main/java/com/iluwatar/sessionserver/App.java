@@ -88,37 +88,34 @@ public class App {
   }
 
   private static void sessionExpirationTask() {
-    new Thread(
-            () -> {
-              while (true) {
-                try {
-                  LOGGER.info("Session expiration checker started...");
-                  Instant currentTime = Instant.now();
-                  synchronized (sessions) {
-                    synchronized (sessionCreationTimes) {
-                      Iterator<Map.Entry<String, Instant>> iterator =
-                          sessionCreationTimes.entrySet().iterator();
-                      while (iterator.hasNext()) {
-                        Map.Entry<String, Instant> entry = iterator.next();
-                        if (entry
-                            .getValue()
-                            .plusMillis(SESSION_EXPIRATION_TIME)
-                            .isBefore(currentTime)) {
-                          sessions.remove(entry.getKey());
-                          iterator.remove();
-                        }
-                      }
-                    }
+    sessionScheduler.scheduleAtFixedRate(
+        () -> {
+          try {
+            LOGGER.info("Session expiration checker started...");
+            Instant currentTime = Instant.now();
+            synchronized (sessions) {
+              synchronized (sessionCreationTimes) {
+                Iterator<Map.Entry<String, Instant>> iterator =
+                    sessionCreationTimes.entrySet().iterator();
+                while (iterator.hasNext()) {
+                  Map.Entry<String, Instant> entry = iterator.next();
+                  if (entry
+                      .getValue()
+                      .plusMillis(SESSION_EXPIRATION_TIME)
+                      .isBefore(currentTime)) {
+                    sessions.remove(entry.getKey());
+                    iterator.remove();
                   }
-                  LOGGER.info("Session expiration checker finished!");
-                } catch (InterruptedException e) {
-                  LOGGER.error("An error occurred: ", e);
-                  Thread.currentThread().interrupt();
                 }
               }
-            },
-            0,
-            SESSION_EXPIRATION_TIME,
-            TimeUnit.MILLISECONDS);
+            }
+            LOGGER.info("Session expiration checker finished!");
+          } catch (Exception e) {
+            LOGGER.error("An error occurred: ", e);
+          }
+        },
+        0,
+        SESSION_EXPIRATION_TIME,
+        TimeUnit.MILLISECONDS);
   }
 }
