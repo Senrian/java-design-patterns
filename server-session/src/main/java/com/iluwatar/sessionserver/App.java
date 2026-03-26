@@ -31,6 +31,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -56,6 +59,10 @@ public class App {
   private static Map<String, Integer> sessions = new HashMap<>();
   private static Map<String, Instant> sessionCreationTimes = new HashMap<>();
   private static final long SESSION_EXPIRATION_TIME = 10000;
+
+  private static final ScheduledExecutorService sessionScheduler =
+      Executors.newSingleThreadScheduledExecutor(
+          Thread.ofVirtual().name("session-scheduler-", 1).factory());
 
   /**
    * Main entry point.
@@ -86,7 +93,6 @@ public class App {
               while (true) {
                 try {
                   LOGGER.info("Session expiration checker started...");
-                  Thread.sleep(SESSION_EXPIRATION_TIME); // Sleep for expiration time
                   Instant currentTime = Instant.now();
                   synchronized (sessions) {
                     synchronized (sessionCreationTimes) {
@@ -110,7 +116,9 @@ public class App {
                   Thread.currentThread().interrupt();
                 }
               }
-            })
-        .start();
+            },
+            0,
+            SESSION_EXPIRATION_TIME,
+            TimeUnit.MILLISECONDS);
   }
 }
