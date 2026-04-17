@@ -77,7 +77,8 @@ public final class App {
       } else {
         // Java Desktop not supported - above unlikely to work for Windows so try the
         // following instead...
-        Runtime.getRuntime().exec("cmd.exe start " + applicationFile);
+        // Use ProcessBuilder with separate arguments to avoid command injection vulnerability
+        new ProcessBuilder("cmd.exe", "start", applicationFile.getAbsolutePath()).start();
       }
 
     } catch (IOException ex) {
